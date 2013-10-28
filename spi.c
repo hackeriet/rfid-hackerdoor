@@ -19,13 +19,10 @@ int spi_main() {
 	// enable LED port as output
 	DEBUG_LED_CONTROL = 0xff;
 
-	DEBUG_LED_OUT = 0x0f;
+	DEBUG_LED_OUT = 0x08;
 
 	/* Set MISO output, all others input, to avoid frying the Raspberry PI */
 	DD_SPI_CONTROL = (1 << DD_MISO);
-
-	/* Disable pull-up resistors on all PINs of port B */
-	DD_SPI_PORT = 0;
 
 	/* Enable SPI -- this enables PINs on PORTB as SPI MISO, MOSI, etc */
 	SPCR = (1 << SPE);

@@ -1,8 +1,9 @@
 
 int rfid_main();
 int spi_main();
+int rfid_spi_loop();
 
 int main(void) {
-	spi_main();
+	rfid_spi_loop();
 }
 

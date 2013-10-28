@@ -2,24 +2,39 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+/* WARNING! If you misconfigure port B, you will fry your Pi! */
+
+#define DD_SS   PB2
+#define DD_MOSI PB3
 #define DD_MISO PB4
-#define DDR_SPI DDRB
+#define DD_SCK  PB5
+#define DD_SPI_PORT PORTB
+#define DD_SPI_CONTROL DDRB
+
+// use port D as output (for LEDs)
+#define DEBUG_LED_OUT PORTD
+#define DEBUG_LED_CONTROL DDRD
 
 int spi_main() {
-	// Set PD to output
-	DDRD = 0xff;
-	PORTD = 0x0f;
+	// enable LED port as output
+	DEBUG_LED_CONTROL = 0xff;
 
-	/* Set MISO output, all others input */
-	DDR_SPI = (1<<DD_MISO);
-	/* Enable SPI */
-	SPCR = (1<<SPE);
+	DEBUG_LED_OUT = 0x0f;
+
+	/* Set MISO output, all others input, to avoid frying the Raspberry PI */
+	DD_SPI_CONTROL = (1 << DD_MISO);
+
+	/* Disable pull-up resistors on all PINs of port B */
+	DD_SPI_PORT = 0;
+
+	/* Enable SPI -- this enables PINs on PORTB as SPI MISO, MOSI, etc */
+	SPCR = (1 << SPE);
 
 	for(;;) {
-		/* Wait for reception complete */
-		if(SPSR & (1<<SPIF)) {
+		/* Wait for SPI reception complete */
+		if(SPSR & (1 << SPIF)) {
 			SPDR = 0x55;
-			PORTD = 0xf0;
+			DEBUG_LED_OUT = 0xf0;
 		}
 	}
 	return 0;
